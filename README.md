@@ -36,4 +36,16 @@ git clone <repo-url>
 
 cd student-api
 
+## Environment Variables
+
+
+
+Create a `.env` file with:
+
+```text
+
+ENV=development
+
+
+
 
