@@ -1,0 +1,34 @@
+{
+	"info": {
+		"_postman_id": "c1eb54b6-e573-46a5-aa3f-8ceba9cd0d09",
+		"name": "Student API",
+		"description": "Postman collection to test Student API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "51401254",
+		"_collection_link": "https://gjyothi176-9609849.postman.co/workspace/Gudapati-Jyothi's-Workspace~88c1a7a1-9fc2-4a4c-89f9-8d239d19208f/collection/51401254-c1eb54b6-e573-46a5-aa3f-8ceba9cd0d09?action=share&source=collection_link&creator=51401254"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/health",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
