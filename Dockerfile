@@ -13,3 +13,4 @@ COPY --from=builder /usr/local /usr/local
 COPY --from=builder /app /app
 
 CMD ["python", "app.py"]
+ENV FLASK_APP=app.py

@@ -101,3 +101,69 @@ docker run -d \
 - Health check: http://localhost:5000/health
 - Get all students: http://localhost:5000/api/v1/students
 ---
+
+## Docker Compose & One-Click Local Setup
+
+This project uses docker-compose to run the API and its dependent services together.
+
+### Pre-requisites
+
+Make sure the following tools are installed on your system:
+
+- Docker
+- Docker Compose
+- GNU Make
+- Powershell(Windows users)
+
+### Services Managed by Docker Compose
+
+- PostgreSQL – database service
+- API – Flask REST API
+
+### Makefile Targets
+
+The Makefile provides a simplified, one-click developer workflow.
+
+| Command        | Description                                         |
+| -------------- | --------------------------------------------------- |
+| `make db-up`   | Start PostgreSQL container                          |
+| `make migrate` | Run database migrations                             |
+| `make build`   | Build REST API Docker image                         |
+| `make up`      | Start DB → run migrations → build image → start API |
+| `make down`    | Stop all containers                                 |
+| `make logs`    | View container logs                                 |
+---
+### One-Click Local Development Setup
+
+Run the following command:
+
+```bash
+make up
+```
+### Order of Execution
+
+When make up is executed:
+
+- PostgreSQL container is started using Docker Compose
+
+- System waits for database readiness
+
+- Database schema migrations are applied
+
+- REST API Docker image is built
+
+- REST API container is started
+
+- This guarantees that the application always runs with a ready database and updated schema.
+---
+### Verify Application (Dockerized)
+
+- Health check: http://localhost:5000/health
+- Get all students: http://localhost:5000/api/v1/students
+---
+## Docker-hosted student API system architecture
+
+<p align="center">
+  <img src="Images/Docker-Hosted- application.png" width="400" />
+</p>
+

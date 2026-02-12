@@ -1,22 +1,23 @@
-IMAGE_NAME=student-api
-IMAGE_TAG=1.1.1
-CONTAINER_NAME=student-api
-PORT=5000
+# Start database only
+db-up:
+	docker-compose up -d db
 
-build:
-	docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
-	
-run: stop
-	docker run -d \
-		--name $(CONTAINER_NAME) \
-		-p $(PORT):$(PORT) \
-		-e PORT=$(PORT) \
-		-e DEBUG=false \
-		$(IMAGE_NAME):$(IMAGE_TAG)
+# Stop everything
+down:
+	docker-compose down
 
-stop:
-	docker stop $(CONTAINER_NAME) || true
-	docker rm $(CONTAINER_NAME) || true
+# Run migrations
+migrate:
+	docker-compose run --rm api flask db upgrade
 
+# Start full application (DB + API)
+up: db-up
+	@echo "Waiting for DB to be ready..."
+	powershell -Command "Start-Sleep 5"
+	make migrate
+	make build
+	docker-compose up -d api
+
+# View logs
 logs:
-	docker logs -f $(CONTAINER_NAME)
+	docker-compose logs -f

@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 # Database config (from environment)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL", "sqlite:///students.db"
+    "DATABASE_URL",
+    "sqlite:///students.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
