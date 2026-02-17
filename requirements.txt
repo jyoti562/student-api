@@ -3,7 +3,6 @@ atomicwrites==1.4.1
 attrs==22.2.0
 click==8.0.4
 colorama==0.4.5
-dataclasses==0.8
 Flask==2.0.3
 Flask-Migrate==4.0.1
 Flask-SQLAlchemy==2.5.1
