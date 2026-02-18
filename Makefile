@@ -1,23 +1,14 @@
-# Start database only
-db-up:
-	docker-compose up -d db
+.PHONY: test lint build docker-push
 
-# Stop everything
-down:
-	docker-compose down
+test:
+	pytest
 
-# Run migrations
-migrate:
-	docker-compose run --rm api flask db upgrade
+lint:
+	python -m flake8 app tests
 
-# Start full application (DB + API)
-up: db-up
-	@echo "Waiting for DB to be ready..."
-	powershell -Command "Start-Sleep 5"
-	make migrate
-	make build
-	docker-compose up -d api
+build:
+	docker build -t student-api .
 
-# View logs
-logs:
-	docker-compose logs -f
+docker-push:
+	docker tag student-api $(DOCKER_USERNAME)/student-api:latest
+	docker push $(DOCKER_USERNAME)/student-api:latest

@@ -1,15 +1,14 @@
 from flask import Flask
 from dotenv import load_dotenv
-from flask import Blueprint
 import os
 
 from .extensions import db, migrate
 
 load_dotenv()
 
+
 def create_app():
     app = Flask(__name__)
-
     # Configuration
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
         "DATABASE_URL",
