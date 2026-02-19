@@ -1,4 +1,4 @@
-# Student REST API
+# STUDENT REST API
 
 A simple REST API built using Python and Flask to manage student data.
 This is a Flask-based REST API containerized using Docker.  
@@ -20,7 +20,7 @@ The application is configurable via environment variables and exposes REST endpo
 
 ## Tech Stack
 
-- Python 3.6+  
+- Python 3.10
 - Flask  
 - SQLAlchemy (SQLite database)  
 - Docker  
@@ -51,7 +51,7 @@ DATABASE_URL=sqlite:///students.db
 4. **Run the application:**
 
 ```bash
-python app.py
+python run.py
 ```
 5. **Verify the application:**
 
@@ -167,3 +167,37 @@ When make up is executed:
   <img src="Images/Docker-Hosted- application.png" width="400" />
 </p>
 
+---
+## CI PIPELINE
+
+This project uses GitHub Actions to implement a Continuous Integration (CI) pipeline.
+
+The pipeline performs the following stages:
+
+- Code linting using flake8
+- Unit testing using pytest
+- Docker image build
+- Docker login to DockerHub
+- Docker image push to central registry
+
+### Trigger Conditions
+
+The CI pipeline runs when:
+- Changes are pushed to the main branch
+- Changes are made inside:
+  - app/
+  - tests/
+  - Dockerfile
+  - requirements.txt
+
+The workflow also supports manual triggering using workflow_dispatch.
+
+The pipeline runs on a self-hosted GitHub runner configured on the local machine.
+
+## CI Pipeline Overview
+
+<p align="center">
+  <img src="Images/CI Pipeline Setup Overview.png" width="400" />
+</p>
+
+---

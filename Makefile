@@ -1,14 +1,16 @@
-.PHONY: test lint build docker-push
+.PHONY: lint test build docker-push
 
-test:
-	pytest
+IMAGE_NAME=student-api
 
 lint:
 	python -m flake8 app tests
 
+test:
+	pytest
+
 build:
-	docker build -t student-api .
+	docker build -t $(IMAGE_NAME):latest .
 
 docker-push:
-	docker tag student-api $(DOCKER_USERNAME)/student-api:latest
-	docker push $(DOCKER_USERNAME)/student-api:latest
+	docker tag $(IMAGE_NAME):latest $(DOCKER_USERNAME)/$(IMAGE_NAME):latest
+	docker push $(DOCKER_USERNAME)/$(IMAGE_NAME):latest
