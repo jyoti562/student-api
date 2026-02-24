@@ -201,3 +201,150 @@ The pipeline runs on a self-hosted GitHub runner configured on the local machine
 </p>
 
 ---
+
+## REST API Deployment on Bare Metal using Vagrant, Docker & Nginx
+
+The infrastructure is provisioned using shell automation and deployed using **Docker Compose** with **Nginx acting as a reverse proxy and load balancer**.
+
+### Key Capabilities
+
+- Horizontal scaling (2 API containers)
+- Reverse proxy configuration
+- Round-robin load balancing
+- Infrastructure automation
+- Reproducible deployments
+- Production-style environment simulation
+
+---
+
+##  Architecture
+
+### Components
+
+| Component | Description |
+|------------|-------------|
+| Vagrant VM | Simulates a bare-metal production environment |
+| API (x2) | Stateless REST API containers |
+| PostgreSQL | Database container |
+| Nginx | Reverse proxy and load balancer |
+| Docker Compose | Multi-container orchestration |
+| Makefile | Deployment automation |
+
+---
+
+##  Tech Stack
+
+- Vagrant (Ubuntu 22.04)
+- Docker
+- Docker Compose
+- Nginx
+- PostgreSQL
+- Bash Scripting
+- Makefile
+
+---
+
+##  Project Structure
+
+```text
+.
+├── Vagrantfile
+├── deploy.sh
+├── docker-compose.yml
+├── Makefile
+├── nginx/
+│   └── nginx.conf
+├── api/
+│   ├── Dockerfile
+│   └── app.py
+└── README.md
+```
+---
+
+##  Prerequisites
+
+Ensure the following are installed on your host machine:
+
+- Vagrant
+- VirtualBox
+- Git
+
+---
+
+## Deployment Guide
+
+###  Start the Production VM
+
+```bash
+vagrant up
+```
+SSH into the VM:
+```
+vagrant ssh
+```
+Deploy Application Stack
+
+Inside the VM:
+```
+make deploy
+```
+ This command:
+ - Builds Docker images
+ - Starts containers
+ - Mounts Nginx configuration
+ - Orchestrates services via Docker Compose
+
+## Access Application
+
+ Application will be available at:
+ ```
+ http://localhost:8080
+ ```
+ ## Load Balancing Strategy
+ Nginx is configured using an upstream block:
+ ```
+ upstream backend {
+     server api_1:5000;
+     server api_2:5000;
+ }
+ ```
+ ## Verification
+ Check Running Containers
+ ```
+ docker ps
+ ```
+ Expected running containers:
+ 2 API containers
+ 1 Database container
+ 1 Nginx container
+
+## Test Using CURL
+ ```
+ curl http://localhost:8080
+ ```
+ Expected response:
+ ```
+ HTTP/1.1 200 OK
+ ```
+Repeated requests should return responses from different container hostnames (verifying load balancing).
+
+## Test Using Postman
+
+- Import the providd Postman collection
+- Verify all endpoints return 200 OK
+- Confirm traffic is balanced between API containers
+## Stop Services
+ ```
+ make down
+ ```
+## Rebuild Deployment
+ ```
+ make build
+ make up
+ ```
+---
+<p align="center">
+  <img src="Images/Depployment.avif" width="400" />
+</p>
+
+---
