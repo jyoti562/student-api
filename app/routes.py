@@ -1,13 +1,17 @@
 from flask import Blueprint, jsonify, request
 from .models import Student
 from .extensions import db
+import socket
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 
-@bp.route("/health", methods=["GET"])
+@bp.route("/health")
 def health():
-    return jsonify({"status": "ok"}), 200
+    return {
+        "status": "ok",
+        "served_by": socket.gethostname()
+    }, 200
 
 
 @bp.route("/students", methods=["GET"])
