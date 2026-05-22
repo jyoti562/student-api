@@ -485,20 +485,313 @@ The application, database, and dependent services are deployed using Kubernetes 
 
 ---
 
-## Learning Outcomes
-
-- Creating and managing Kubernetes manifests
-- Understanding Kubernetes Service types
-- Deploying workloads on dedicated nodes using node labels
-- Running database migrations using Init Containers
-- Managing configurations using ConfigMaps
-- Managing secrets securely using Hashicorp Vault and External Secrets Operator (ESO)
-
----
 # Kubernetes Architecture
 
 <p align="center">
-  <img src="Images/kubernetes-cluster-architecture.png" width="700" />
+  <img src="Images/k8s_Deployment.png" width="700" />
 </p>
+
+---
+
+# Kubernetes Cluster Details
+
+| Node | Purpose | Label |
+|------|----------|--------|
+| Node A | Application workloads | `type=application` |
+| Node B | Database workloads | `type=database` |
+| Node C | Dependent services workloads | `type=dependent_services` |
+
+---
+
+# Kubernetes Components Used
+
+| Component | Purpose |
+|------------|---------|
+| Namespace | Logical isolation of resources |
+| Deployment | Runs and manages application pods |
+| Service | Exposes application internally/externally |
+| ConfigMap | Stores non-sensitive environment variables |
+| External Secret | Fetches secrets from Vault |
+| SecretStore | Connects ESO with Vault |
+| Init Container | Runs DB migrations before application starts |
+
+---
+
+# Project Structure
+
+```text
+Kubernetes/
+├── application.yaml
+├── database.yaml
+├── secretstore.yaml
+├── externalsecret.yaml
+└── README.md
+```
+
+---
+
+# Namespace Creation
+
+All application and database resources are deployed inside the `student-api` namespace.
+
+```bash
+kubectl create namespace student-api
+```
+---
+# Database Deployment
+
+The PostgreSQL database is deployed using:
+
+- Deployment
+- ClusterIP Service
+- Environment variables
+
+Database workloads are scheduled only on the database node using:
+
+```yaml
+nodeSelector:
+  type: database
+```
+
+Apply database manifests:
+
+```bash
+kubectl apply -f database.yaml
+```
+
+Verify:
+
+```bash
+kubectl get pods -n student-api
+kubectl get svc -n student-api
+```
+
+---
+
+# Application Deployment
+
+The Flask REST API is deployed using:
+
+- Deployment
+- NodePort Service
+- ConfigMap
+- External Secrets
+- Init Container
+
+Application workloads are scheduled on the application node using:
+
+```yaml
+nodeSelector:
+  type: application
+```
+
+Apply application manifests:
+
+```bash
+kubectl apply -f application.yaml
+```
+
+---
+
+# ConfigMap Usage
+
+ConfigMaps are used for passing non-sensitive environment variables such as:
+
+- DB Host
+- DB Port
+- DB Name
+- Flask environment variables
+
+Example:
+
+```yaml
+envFrom:
+  - configMapRef:
+      name: app-config
+```
+
+---
+
+# Secrets Management using Vault & ESO
+
+Sensitive data such as:
+
+- Database username
+- Database password
+
+are securely managed using:
+
+- Hashicorp Vault
+- External Secrets Operator (ESO)
+
+ESO fetches secrets from Vault and injects them into Kubernetes secrets.
+
+---
+
+# Vault Deployment
+
+Vault is deployed in the Kubernetes cluster using Helm.
+
+```bash
+helm install vault hashicorp/vault \
+-n vault \
+--create-namespace \
+--set "server.dev.enabled=true"
+```
+
+Verify Vault pods:
+
+```bash
+kubectl get pods -n vault
+```
+
+---
+
+# External Secrets Operator (ESO)
+
+ESO is installed using Helm and configured to communicate with Vault.
+
+Verify ESO installation:
+
+```bash
+kubectl get pods -n external-secrets
+```
+
+---
+
+# SecretStore Configuration
+
+A SecretStore resource is used to configure Vault as the backend secret store.
+
+Apply:
+
+```bash
+kubectl apply -f secretstore.yaml
+```
+
+Verify:
+
+```bash
+kubectl get secretstore -n student-api
+```
+
+---
+
+# External Secret Configuration
+
+ExternalSecret resources fetch secrets from Vault and create Kubernetes secrets automatically.
+
+Apply:
+
+```bash
+kubectl apply -f externalsecret.yaml
+```
+
+Verify:
+
+```bash
+kubectl get externalsecret -n student-api
+kubectl get secret -n student-api
+```
+
+---
+
+# Init Container for Database Migrations
+
+Database migrations are executed before the application container starts.
+
+This is implemented using an Init Container.
+
+Example flow:
+
+1. Init container runs Alembic migrations
+2. Database schema is updated
+3. Main application container starts
+
+Verify migration logs:
+
+```bash
+kubectl logs <pod-name> -c db-migration -n student-api
+```
+
+---
+
+# Exposing REST API
+
+The Flask REST API is exposed using a NodePort service.
+
+Example:
+
+```yaml
+type: NodePort
+```
+
+Verify services:
+
+```bash
+kubectl get svc -n student-api
+```
+
+---
+
+# Port Forwarding
+
+Access application locally using:
+
+```bash
+kubectl port-forward svc/student-api-service 5000:5000 -n student-api
+```
+
+---
+
+# API Verification
+
+Health Check:
+
+```bash
+curl http://localhost:5000/api/v1/health
+```
+
+Get Students:
+
+```bash
+curl http://localhost:5000/api/v1/students
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
+---
+
+# Verify Kubernetes Resources
+
+Pods:
+
+```bash
+kubectl get pods -n student-api -o wide
+```
+
+Services:
+
+```bash
+kubectl get svc -n student-api
+```
+
+ConfigMaps:
+
+```bash
+kubectl get configmap -n student-api
+```
+
+Secrets:
+
+```bash
+kubectl get secret -n student-api
+```
 
 ---
