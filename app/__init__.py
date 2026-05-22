@@ -6,14 +6,11 @@ from .extensions import db, migrate
 
 load_dotenv()
 
-
 def create_app():
     app = Flask(__name__)
-    # Configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-        "DATABASE_URL",
-        "sqlite:///students.db"
-    )
+
+    # PostgreSQL config
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Initialize extensions

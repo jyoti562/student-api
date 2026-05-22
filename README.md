@@ -348,3 +348,157 @@ Repeated requests should return responses from different container hostnames (ve
 </p>
 
 ---
+# Kubernetes Cluster Setup using Minikube
+This project uses a multi-node Kubernetes cluster created using Minikube to simulate a production-style Kubernetes environment locally.
+
+The Kubernetes cluster is logically separated into dedicated nodes for:
+
+- Application workloads
+- Database workloads
+- Dependent platform services such as Vault and observability stack
+
+This setup helps simulate real-world infrastructure isolation and workload scheduling practices used in production Kubernetes environments.
+
+---
+
+## Kubernetes Cluster Architecture
+
+| Node | Purpose | Label |
+|------|----------|-------|
+| Node A | Application workloads | `type=application` |
+| Node B | Database workloads | `type=database` |
+| Node C | Dependent services (Vault, ESO, Monitoring) | `type=dependent_services` |
+
+---
+
+## Technologies Used
+
+- Kubernetes
+- Minikube
+- kubectl
+- Docker Driver
+
+---
+
+## Start Multi-Node Kubernetes Cluster
+
+### Create a 3-Node Minikube Cluster
+
+```bash
+minikube start --nodes 3 -p student-cluster --driver=docker
+
+```
+### Verify Cluster Nodes
+
+```bash
+kubectl get nodes
+```
+### Expected output:
+```bash
+kubectl get nodes
+NAME                  STATUS   ROLES           AGE   VERSION
+student-cluster       Ready    control-plane   13d   v1.33.1
+student-cluster-m02   Ready    <none>          13d   v1.33.1
+student-cluster-m03   Ready    <none>          13d   v1.33.1
+```
+### Add Node Labels
+
+### Label Application Node
+
+```bash
+kubectl label node student-cluster type=application
+```
+### Label Database Node
+```bash
+kubectl label node student-cluster-m02 type=database
+```
+### Label Dependent Services Node
+```bash
+kubectl label node student-cluster-m03 type=dependent_services
+```
+### Verify Node Labels
+
+```bash
+kubectl get nodes --show-labels
+```
+### Expected Labels:
+```bash
+type=application
+type=database
+type=dependent_services
+```
+### Why Node Labels Are Used
+
+Node labels are used for workload isolation and controlled scheduling using Kubernetes nodeSelector.
+
+This allows:
+
+Application pods to run only on the application node
+PostgreSQL database pods to run only on the database node
+Vault and dependent platform services to run only on the dependent services node
+
+---
+### Create Application Namespace
+
+```bash
+kubectl create namespace student-api
+```
+### Verify Namespaces
+
+```bash
+kubectl get namespaces
+```
+### Expected Output
+
+```bash
+PS D:\HFL\student_api> kubectl get namespaces
+NAME               STATUS   
+default            Active   
+student-api        Active   
+```
+### Verify Cluster Health
+
+```bash
+kubectl get nodes -o wide
+```
+### Expected Output:
+
+```bash
+kubectl get nodes -o wide
+NAME                  STATUS              
+student-cluster       Ready    control-plane  
+student-cluster-m02   Ready    <none>          
+student-cluster-m03   Ready    <none>          
+```
+---
+
+<p align="center">
+  <img src="Images/cluster Overview.png" width="400" />
+</p>
+
+---
+
+# Kubernetes Deployment of REST API & Dependent Services
+
+This project is deployed on a **3-node Kubernetes cluster** created using **Minikube**.  
+The application, database, and dependent services are deployed using Kubernetes manifests.
+
+---
+
+## Learning Outcomes
+
+- Creating and managing Kubernetes manifests
+- Understanding Kubernetes Service types
+- Deploying workloads on dedicated nodes using node labels
+- Running database migrations using Init Containers
+- Managing configurations using ConfigMaps
+- Managing secrets securely using Hashicorp Vault and External Secrets Operator (ESO)
+
+---
+# Kubernetes Architecture
+
+<p align="center">
+  <img src="Images/kubernetes-cluster-architecture.png" width="700" />
+</p>
+
+---

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: monitoring-pod
+  labels:
+    app: monitoring
+spec:
+  nodeSelector:
+    type: dependent_services
+  containers:
+  - name: monitoring
+    image: prom/prometheus
+    ports:
+    - containerPort: 9090
